@@ -54,13 +54,6 @@ public class NamespacePrintVisitor implements NamespaceVisitor {
   static final String NON_LAST_ITEM = "+-";
   static final String LAST_ITEM = "\\-";
 
-  /** Print the tree from the given root to a {@link File}. */
-  public static void print2File(INode root, File f) throws IOException {
-    try(final PrintWriter out = new PrintWriter(new FileWriter(f), true)) {
-      new NamespacePrintVisitor(out).print(root);
-    }
-  }
-
   /** @return string of the tree in the given {@link FSNamesystem}. */
   public static String print2Sting(FSNamesystem ns) {
     return print2Sting(ns.getFSDirectory().getRoot());
@@ -71,14 +64,6 @@ public class NamespacePrintVisitor implements NamespaceVisitor {
     final StringWriter out = new StringWriter();
     new NamespacePrintVisitor(new PrintWriter(out)).print(root);
     return out.getBuffer().toString();
-  }
-
-  /**
-   * Print the tree in the given {@link FSNamesystem}
-   * to the given {@link PrintStream}.
-   */
-  public static void print(FSNamesystem ns, PrintStream out) {
-    new NamespacePrintVisitor(new PrintWriter(out)).print(ns);
   }
 
   private final PrintWriter out;
