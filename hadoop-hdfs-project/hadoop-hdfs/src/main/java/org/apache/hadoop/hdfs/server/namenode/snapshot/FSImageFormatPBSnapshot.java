@@ -117,7 +117,9 @@ public class FSImageFormatPBSnapshot {
           break;
         }
         INodeReference ref = loadINodeReference(e);
-        refList.add(ref);
+        if (ref != null) {
+          refList.add(ref);
+        }
       }
     }
 
@@ -125,6 +127,12 @@ public class FSImageFormatPBSnapshot {
         INodeReferenceSection.INodeReference r) {
       long referredId = r.getReferredId();
       INode referred = fsDir.getInode(referredId);
+      if (referred == null) {
+        FSImage.LOG.error("FSImageFormatPBSnapshot: Missing referred INodeId "
+            + referredId + ", proto=" + r);
+        return null;
+      }
+
       WithCount withCount = (WithCount) referred.getParentReference();
       if (withCount == null) {
         withCount = new INodeReference.WithCount(null, referred);

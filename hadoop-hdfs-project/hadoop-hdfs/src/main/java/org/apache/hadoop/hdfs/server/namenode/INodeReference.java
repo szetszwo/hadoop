@@ -827,21 +827,20 @@ public abstract class INodeReference extends INode {
     /**
      * When dstSnapshotId >= snapshotToBeDeleted,
      * this reference is not in snapshotToBeDeleted.
-     * This reference should not be destroyed.
+     * Log a warning message.
      *
      * @param context to {@link ReclaimContext#getSnapshotIdToBeDeleted()}
      */
-    private boolean shouldDestroy(ReclaimContext context) {
+    private void shouldDestroy(ReclaimContext context) {
       final int snapshotToBeDeleted = context.getSnapshotIdToBeDeleted();
       if (dstSnapshotId < snapshotToBeDeleted) {
-        return true;
+        return;
       }
       LOG.warn("Try to destroy a DstReference with dstSnapshotId = {}"
           + " >= snapshotToBeDeleted = {}", dstSnapshotId, snapshotToBeDeleted);
       LOG.warn("    dstRef: {}", toDetailString());
       final INode r = getReferredINode().asReference().getReferredINode();
       LOG.warn("  referred: {}", r.toDetailString());
-      return false;
     }
 
     /**
@@ -857,9 +856,7 @@ public abstract class INodeReference extends INode {
      */
     @Override
     public void destroyAndCollectBlocks(ReclaimContext reclaimContext) {
-      if (!shouldDestroy(reclaimContext)) {
-        return;
-      }
+      shouldDestroy(reclaimContext);
 
       // since we count everything of the subtree for the quota usage of a
       // dst reference node, here we should just simply do a quota computation.

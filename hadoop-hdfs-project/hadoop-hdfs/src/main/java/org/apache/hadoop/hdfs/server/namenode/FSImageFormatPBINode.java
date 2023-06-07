@@ -278,16 +278,18 @@ public final class FSImageFormatPBINode {
         for (long id : e.getChildrenList()) {
           INode child = dir.getInode(id);
           if (!addToParent(p, child)) {
-            LOG.warn("Failed to add the inode {} to the directory {}",
-                child.getId(), p.getId());
+            LOG.warn("Failed to add the inode {}"
+                    + " to the directory {}: child={}",
+                child.getId(), p.getId(), child);
           }
         }
 
         for (int refId : e.getRefChildrenList()) {
           INodeReference ref = refList.get(refId);
           if (!addToParent(p, ref)) {
-            LOG.warn("Failed to add the inode reference {} to the directory {}",
-                ref.getId(), p.getId());
+            LOG.warn("Failed to add the inode reference {}"
+                    + " to the directory {}: ref={}",
+                ref.getId(), p.getId(), ref);
           }
         }
       }
@@ -483,6 +485,9 @@ public final class FSImageFormatPBINode {
     }
 
     private boolean addToParent(INodeDirectory parentDir, INode child) {
+      if (child == null) {
+        return false;
+      }
       if (parentDir == dir.rootDir && FSDirectory.isReservedName(child)) {
         throw new HadoopIllegalArgumentException("File name \""
             + child.getLocalName() + "\" is reserved. Please "
