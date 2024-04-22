@@ -2546,6 +2546,15 @@
 </property>
 
 <property>
+  <name>dfs.message-digest.algorithm</name>
+  <value>MD5</value>
+  <description>
+    The message digest algorithm used in FSNamesystem
+    for non-security purposes such as error detection.
+  </description>
+</property>
+
+<property>
   <name>dfs.encrypt.data.transfer</name>
   <value>false</value>
   <description>

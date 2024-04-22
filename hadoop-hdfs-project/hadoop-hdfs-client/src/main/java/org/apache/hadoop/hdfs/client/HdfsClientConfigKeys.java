@@ -131,6 +131,9 @@ public interface HdfsClientConfigKeys {
       TimeUnit.HOURS.toMillis(1);
   String  DFS_CHECKSUM_TYPE_KEY = "dfs.checksum.type";
   String  DFS_CHECKSUM_TYPE_DEFAULT = "CRC32C";
+  String  DFS_MESSAGE_DIGEST_ALGORITHM_KEY = "dfs.message-digest.algorithm";
+  String  DFS_MESSAGE_DIGEST_ALGORITHM_DEFAULT = "MD5";
+
   String  DFS_BYTES_PER_CHECKSUM_KEY = "dfs.bytes-per-checksum";
   int     DFS_BYTES_PER_CHECKSUM_DEFAULT = 512;
   String  DFS_CHECKSUM_COMBINE_MODE_KEY = "dfs.checksum.combine.mode";

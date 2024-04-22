@@ -32,6 +32,8 @@ import static org.apache.hadoop.fs.CommonConfigurationKeysPublic.IO_FILE_BUFFER_
 import static org.apache.hadoop.fs.CommonConfigurationKeysPublic.IO_FILE_BUFFER_SIZE_KEY;
 import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_BLOCK_SIZE_DEFAULT;
 import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_BLOCK_SIZE_KEY;
+import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_MESSAGE_DIGEST_ALGORITHM_DEFAULT;
+import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_MESSAGE_DIGEST_ALGORITHM_KEY;
 import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_NAMENODE_AUDIT_LOG_WITH_REMOTE_PORT_DEFAULT;
 import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_NAMENODE_AUDIT_LOG_WITH_REMOTE_PORT_KEY;
 import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_STORAGE_POLICY_ENABLED_DEFAULT;
@@ -936,10 +938,12 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
             + DFS_CHECKSUM_TYPE_KEY + ": " + checksumTypeStr);
       }
 
+      final String messageDigestAlgorithm = conf.get(DFS_MESSAGE_DIGEST_ALGORITHM_KEY,
+          DFS_MESSAGE_DIGEST_ALGORITHM_DEFAULT);
       try {
-        digest = MessageDigest.getInstance("MD5");
+        digest = MessageDigest.getInstance(messageDigestAlgorithm);
       } catch (NoSuchAlgorithmException e) {
-        throw new IOException("Algorithm 'MD5' not found");
+        throw new IOException("Algorithm '" + messageDigestAlgorithm + "' not found", e);
       }
 
       this.serverDefaults = new FsServerDefaults(
