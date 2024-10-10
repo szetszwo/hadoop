@@ -15,7 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hdfs.protocol.datatransfer.sasl;
+package org.apache.hadoop.security;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
@@ -31,7 +34,9 @@ public interface CustomizedCallbackHandler {
     public void handleCallbacks(List<Callback> callbacks, String username, char[] password)
         throws UnsupportedCallbackException {
       if (!callbacks.isEmpty()) {
-        throw new UnsupportedCallbackException(callbacks.get(0));
+        final Callback cb = callbacks.get(0);
+        throw new UnsupportedCallbackException(callbacks.get(0),
+            "Unsupported callback: " + (cb == null ? null : cb.getClass()));
       }
     }
   }
@@ -53,6 +58,20 @@ public interface CustomizedCallbackHandler {
         throw new IOException("Failed to invoke " + method, e);
       }
     };
+  }
+
+  static CustomizedCallbackHandler get(Configuration conf) {
+    final Class<?> clazz = conf.getClass(
+        CommonConfigurationKeysPublic.HADOOP_SECURITY_SASL_CUSTOMIZEDCALLBACKHANDLER_CLASS_KEY,
+        DefaultHandler.class);
+    final Object handler;
+    try {
+      handler = clazz.newInstance();
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to create a new instance of " + clazz, e);
+    }
+    return handler instanceof CustomizedCallbackHandler ? (CustomizedCallbackHandler) handler
+        : CustomizedCallbackHandler.delegate(handler);
   }
 
   void handleCallbacks(List<Callback> callbacks, String name, char[] password)
